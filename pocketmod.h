@@ -148,7 +148,7 @@ static int32_t _pocketmod_clamp_volume(int32_t x)
 /* Zero out a block of memory */
 static void _pocketmod_zero(void *data, int32_t size)
 {
-    char *byte = data, *end = byte + size;
+    char *byte = (char*) data, *end = byte + size;
     while (byte != end) { *byte++ = 0; }
 }
 
