@@ -3,3 +3,6 @@ converter.exe
 player
 player.exe
 *.wav
+
+# macOS junk files
+.DS_Store
