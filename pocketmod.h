@@ -111,7 +111,11 @@ struct pocketmod_context
 #define POCKETMOD_VOLUME 0x02
 
 /* The size of one sample in bytes */
+#ifdef POCKETMOD_INT_PCM
+#define POCKETMOD_SAMPLE_SIZE sizeof(short[2])
+#else
 #define POCKETMOD_SAMPLE_SIZE sizeof(float[2])
+#endif
 
 /* Finetune adjustment table. Three octaves for each finetune setting. */
 static const int8_t _pocketmod_finetune[16][36] = {
@@ -564,9 +568,23 @@ static void _pocketmod_next_tick(pocketmod_context *c)
     }
 }
 
+#ifdef POCKETMOD_INT_PCM
+/* Clip a floating point sample to the [-1, +1] range */
+static float _pocketmod_clip(float value)
+{
+    value = value < -1.0f ? -1.0f : value;
+    value = value > +1.0f ? +1.0f : value;
+    return value;
+}
+#endif
+
 static void _pocketmod_render_channel(pocketmod_context *c,
                                       _pocketmod_chan *chan,
+#ifdef POCKETMOD_INT_PCM
+                                      short *output,
+#else
                                       float *output,
+#endif
                                       int32_t samples_to_write)
 {
     /* Gather some loop data */
@@ -601,8 +619,13 @@ static void _pocketmod_render_channel(pocketmod_context *c,
             float s = (1.0f - t) * sample->data[x0] + t * sample->data[x1];
 #endif
             chan->position += chan->increment;
+#ifdef POCKETMOD_INT_PCM
+            *output++ += (short) (_pocketmod_clip(level_l * s) * 0x7fff);
+            *output++ += (short) (_pocketmod_clip(level_r * s) * 0x7fff);
+#else
             *output++ += level_l * s;
             *output++ += level_r * s;
+#endif
         }
 
         /* Rewind the sample when reaching the loop point */
@@ -794,7 +817,11 @@ int32_t pocketmod_render(pocketmod_context *c, void *buffer, int32_t buffer_size
     int32_t i, samples_rendered = 0;
     int32_t samples_remaining = buffer_size / POCKETMOD_SAMPLE_SIZE;
     if (c && buffer) {
-        float (*output)[2] = (int16_t(*)[2]) buffer;
+#ifdef POCKETMOD_INT_PCM
+        int16_t (*output)[2] = (int16_t(*)[2]) buffer;
+#else
+        float (*output)[2] = (float(*)[2]) buffer;
+#endif
         while (samples_remaining > 0) {
 
             /* Calculate the number of samples left in this tick */
