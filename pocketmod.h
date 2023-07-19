@@ -3,14 +3,17 @@
 #ifndef POCKETMOD_H_INCLUDED
 #define POCKETMOD_H_INCLUDED
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct pocketmod_context pocketmod_context;
-int pocketmod_init(pocketmod_context *c, const void *data, int size, int rate);
-int pocketmod_render(pocketmod_context *c, void *buffer, int size);
-int pocketmod_loop_count(pocketmod_context *c);
+
+int32_t pocketmod_init      (pocketmod_context *c, const void *data, int32_t size, int32_t rate);
+int32_t pocketmod_render    (pocketmod_context *c, void *buffer, int32_t size);
+int32_t pocketmod_loop_count(pocketmod_context *c);
 
 #ifndef POCKETMOD_MAX_CHANNELS
 #define POCKETMOD_MAX_CHANNELS 32
@@ -21,70 +24,70 @@ int pocketmod_loop_count(pocketmod_context *c);
 #endif
 
 typedef struct {
-    signed char *data;          /* Sample data buffer                      */
-    unsigned int length;        /* Data length (in bytes)                  */
+    int8_t  *data;               /* Sample data buffer                      */
+    uint32_t length;             /* Data length (in bytes)                  */
 } _pocketmod_sample;
 
 typedef struct {
-    unsigned char dirty;        /* Pitch/volume dirty flags                */
-    unsigned char sample;       /* Sample number (0..31)                   */
-    unsigned char volume;       /* Base volume without tremolo (0..64)     */
-    unsigned char balance;      /* Stereo balance (0..255)                 */
-    unsigned short period;      /* Note period (113..856)                  */
-    unsigned short delayed;     /* Delayed note period (113..856)          */
-    unsigned short target;      /* Target period (for tone portamento)     */
-    unsigned char finetune;     /* Note finetune (0..15)                   */
-    unsigned char loop_count;   /* E6x loop counter                        */
-    unsigned char loop_line;    /* E6x target line                         */
-    unsigned char lfo_step;     /* Vibrato/tremolo LFO step counter        */
-    unsigned char lfo_type[2];  /* LFO type for vibrato/tremolo            */
-    unsigned char effect;       /* Current effect (0x0..0xf or 0xe0..0xef) */
-    unsigned char param;        /* Raw effect parameter value              */
-    unsigned char param3;       /* Parameter memory for 3xx                */
-    unsigned char param4;       /* Parameter memory for 4xy                */
-    unsigned char param7;       /* Parameter memory for 7xy                */
-    unsigned char param9;       /* Parameter memory for 9xx                */
-    unsigned char paramE1;      /* Parameter memory for E1x                */
-    unsigned char paramE2;      /* Parameter memory for E2x                */
-    unsigned char paramEA;      /* Parameter memory for EAx                */
-    unsigned char paramEB;      /* Parameter memory for EBx                */
-    unsigned char real_volume;  /* Volume (with tremolo adjustment)        */
-    float position;             /* Position in sample data buffer          */
-    float increment;            /* Position increment per output sample    */
+    uint8_t  dirty;              /* Pitch/volume dirty flags                */
+    uint8_t  sample;             /* Sample number (0..31)                   */
+    uint8_t  volume;             /* Base volume without tremolo (0..64)     */
+    uint8_t  balance;            /* Stereo balance (0..255)                 */
+    uint16_t period;             /* Note period (113..856)                  */
+    uint16_t delayed;            /* Delayed note period (113..856)          */
+    uint16_t target;             /* Target period (for tone portamento)     */
+    uint8_t  finetune;           /* Note finetune (0..15)                   */
+    uint8_t  loop_count;         /* E6x loop counter                        */
+    uint8_t  loop_line;          /* E6x target line                         */
+    uint8_t  lfo_step;           /* Vibrato/tremolo LFO step counter        */
+    uint8_t  lfo_type[2];        /* LFO type for vibrato/tremolo            */
+    uint8_t  effect;             /* Current effect (0x0..0xf or 0xe0..0xef) */
+    uint8_t  param;              /* Raw effect parameter value              */
+    uint8_t  param3;             /* Parameter memory for 3xx                */
+    uint8_t  param4;             /* Parameter memory for 4xy                */
+    uint8_t  param7;             /* Parameter memory for 7xy                */
+    uint8_t  param9;             /* Parameter memory for 9xx                */
+    uint8_t  paramE1;            /* Parameter memory for E1x                */
+    uint8_t  paramE2;            /* Parameter memory for E2x                */
+    uint8_t  paramEA;            /* Parameter memory for EAx                */
+    uint8_t  paramEB;            /* Parameter memory for EBx                */
+    uint8_t  real_volume;        /* Volume (with tremolo adjustment)        */
+    float    position;           /* Position in sample data buffer          */
+    float    increment;          /* Position increment per output sample    */
 } _pocketmod_chan;
 
 struct pocketmod_context
 {
     /* Read-only song data */
     _pocketmod_sample samples[POCKETMOD_MAX_SAMPLES];
-    unsigned char *source;      /* Pointer to source MOD data              */
-    unsigned char *order;       /* Pattern order table                     */
-    unsigned char *patterns;    /* Start of pattern data                   */
-    unsigned char length;       /* Patterns in the order (1..128)          */
-    unsigned char reset;        /* Pattern to loop back to (0..127)        */
-    unsigned char num_patterns; /* Patterns in the file (1..128)           */
-    unsigned char num_samples;  /* Sample count (15 or 31)                 */
-    unsigned char num_channels; /* Channel count (1..32)                   */
+    uint8_t *source;             /* Pointer to source MOD data              */
+    uint8_t *order;              /* Pattern order table                     */
+    uint8_t *patterns;           /* Start of pattern data                   */
+    uint8_t  length;             /* Patterns in the order (1..128)          */
+    uint8_t  reset;              /* Pattern to loop back to (0..127)        */
+    uint8_t  num_patterns;       /* Patterns in the file (1..128)           */
+    uint8_t  num_samples;        /* Sample count (15 or 31)                 */
+    uint8_t  num_channels;       /* Channel count (1..32)                   */
 
     /* Timing variables */
-    int samples_per_second;     /* Sample rate (set by user)               */
-    int ticks_per_line;         /* A.K.A. song speed (initially 6)         */
-    float samples_per_tick;     /* Depends on sample rate and BPM          */
+    int32_t samples_per_second;  /* Sample rate (set by user)               */
+    int32_t ticks_per_line;      /* A.K.A. song speed (initially 6)         */
+    float   samples_per_tick;    /* Depends on sample rate and BPM          */
 
     /* Loop detection state */
-    unsigned char visited[16];  /* Bit mask of previously visited patterns */
-    int loop_count;             /* How many times the song has looped      */
+    uint8_t visited[16];         /* Bit mask of previously visited patterns */
+    int32_t loop_count;          /* How many times the song has looped      */
 
     /* Render state */
     _pocketmod_chan channels[POCKETMOD_MAX_CHANNELS];
-    unsigned char pattern_delay;/* EEx pattern delay counter               */
-    unsigned int lfo_rng;       /* RNG used for the random LFO waveform    */
+    uint8_t pattern_delay;       /* EEx pattern delay counter               */
+    uint32_t lfo_rng;            /* RNG used for the random LFO waveform    */
 
     /* Position in song (from least to most granular) */
-    signed char pattern;        /* Current pattern in order                */
-    signed char line;           /* Current line in pattern                 */
-    short tick;                 /* Current tick in line                    */
-    float sample;               /* Current sample in tick                  */
+    int8_t pattern;              /* Current pattern in order                */
+    int8_t line;                 /* Current line in pattern                 */
+    int16_t tick;                /* Current tick in line                    */
+    float sample;                /* Current sample in tick                  */
 };
 
 #ifdef POCKETMOD_IMPLEMENTATION
@@ -111,7 +114,7 @@ struct pocketmod_context
 #define POCKETMOD_SAMPLE_SIZE sizeof(float[2])
 
 /* Finetune adjustment table. Three octaves for each finetune setting. */
-static const signed char _pocketmod_finetune[16][36] = {
+static const int8_t _pocketmod_finetune[16][36] = {
     {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0},
     { -6, -6, -5, -5, -4, -3, -3, -3, -3, -3, -3, -3, -3, -3, -2, -3, -2, -2, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0},
     {-12,-12,-10,-11, -8, -8, -7, -7, -6, -6, -6, -6, -6, -6, -5, -5, -4, -4, -4, -3, -3, -3, -3, -2, -3, -3, -2, -3, -3, -2, -2, -2, -2, -2, -2, -1},
@@ -131,11 +134,11 @@ static const signed char _pocketmod_finetune[16][36] = {
 };
 
 /* Min/max helper functions */
-static int _pocketmod_min(int x, int y) { return x < y ? x : y; }
-static int _pocketmod_max(int x, int y) { return x > y ? x : y; }
+static int32_t _pocketmod_min(int32_t x, int32_t y) { return x < y ? x : y; }
+static int32_t _pocketmod_max(int32_t x, int32_t y) { return x > y ? x : y; }
 
 /* Clamp a volume value to the 0..64 range */
-static int _pocketmod_clamp_volume(int x)
+static int32_t _pocketmod_clamp_volume(int32_t x)
 {
     x = _pocketmod_max(x, 0x00);
     x = _pocketmod_min(x, 0x40);
@@ -143,14 +146,14 @@ static int _pocketmod_clamp_volume(int x)
 }
 
 /* Zero out a block of memory */
-static void _pocketmod_zero(void *data, int size)
+static void _pocketmod_zero(void *data, int32_t size)
 {
     char *byte = data, *end = byte + size;
     while (byte != end) { *byte++ = 0; }
 }
 
 /* Convert a period (at finetune = 0) to a note index in 0..35 */
-static int _pocketmod_period_to_note(int period)
+static int32_t _pocketmod_period_to_note(int32_t period)
 {
     switch (period) {
         case 856: return  0; case 808: return  1; case 762: return  2;
@@ -170,20 +173,20 @@ static int _pocketmod_period_to_note(int period)
 }
 
 /* Table-based sine wave oscillator */
-static int _pocketmod_sin(int step)
+static int32_t _pocketmod_sin(int32_t step)
 {
     /* round(sin(x * pi / 32) * 255) for x in 0..15 */
-    static const unsigned char sin[16] = {
+    static const uint8_t sin[16] = {
         0x00, 0x19, 0x32, 0x4a, 0x62, 0x78, 0x8e, 0xa2,
         0xb4, 0xc5, 0xd4, 0xe0, 0xec, 0xf4, 0xfa, 0xfe
     };
-    int x = sin[step & 0x0f];
+    int32_t x = sin[step & 0x0f];
     x = (step & 0x1f) < 0x10 ? x : 0xff - x;
     return step < 0x20 ? x : -x;
 }
 
 /* Oscillators for vibrato/tremolo effects */
-static int _pocketmod_lfo(pocketmod_context *c, _pocketmod_chan *ch, int step)
+static int32_t _pocketmod_lfo(pocketmod_context *c, _pocketmod_chan *ch, int32_t step)
 {
     switch (ch->lfo_type[ch->effect == 7] & 3) {
         case 0: return _pocketmod_sin(step & 0x3f);         /* Sine   */
@@ -203,8 +206,8 @@ static void _pocketmod_update_pitch(pocketmod_context *c, _pocketmod_chan *ch)
 
         /* Apply vibrato (if active) */
         if (ch->effect == 0x4 || ch->effect == 0x6) {
-            int step = (ch->param4 >> 4) * ch->lfo_step;
-            int rate = ch->param4 & 0x0f;
+            int32_t step = (ch->param4 >> 4) * ch->lfo_step;
+            int32_t rate = ch->param4 & 0x0f;
             period += _pocketmod_lfo(c, ch, step) * rate / 128.0f;
 
         /* Apply arpeggio (if active) */
@@ -215,7 +218,7 @@ static void _pocketmod_update_pitch(pocketmod_context *c, _pocketmod_chan *ch)
                 1.587401f, 1.681793f, 1.781797f, 1.887749f,
                 2.000000f, 2.118926f, 2.244924f, 2.378414f
             };
-            int step = (ch->param >> ((2 - c->tick % 3) << 2)) & 0x0f;
+            int32_t step = (ch->param >> ((2 - c->tick % 3) << 2)) & 0x0f;
             period /= arpeggio[step];
         }
 
@@ -229,38 +232,38 @@ static void _pocketmod_update_pitch(pocketmod_context *c, _pocketmod_chan *ch)
 
 static void _pocketmod_update_volume(pocketmod_context *c, _pocketmod_chan *ch)
 {
-    int volume = ch->volume;
+    int32_t volume = ch->volume;
     if (ch->effect == 0x7) {
-        int step = ch->lfo_step * (ch->param7 >> 4);
+        int32_t step = ch->lfo_step * (ch->param7 >> 4);
         volume += _pocketmod_lfo(c, ch, step) * (ch->param7 & 0x0f) >> 6;
     }
     ch->real_volume = _pocketmod_clamp_volume(volume);
     ch->dirty &= ~POCKETMOD_VOLUME;
 }
 
-static void _pocketmod_pitch_slide(_pocketmod_chan *ch, int amount)
+static void _pocketmod_pitch_slide(_pocketmod_chan *ch, int32_t amount)
 {
-    int max = 856 + _pocketmod_finetune[ch->finetune][ 0];
-    int min = 113 + _pocketmod_finetune[ch->finetune][35];
+    int32_t max = 856 + _pocketmod_finetune[ch->finetune][ 0];
+    int32_t min = 113 + _pocketmod_finetune[ch->finetune][35];
     ch->period += amount;
     ch->period = _pocketmod_max(ch->period, min);
     ch->period = _pocketmod_min(ch->period, max);
     ch->dirty |= POCKETMOD_PITCH;
 }
 
-static void _pocketmod_volume_slide(_pocketmod_chan *ch, int param)
+static void _pocketmod_volume_slide(_pocketmod_chan *ch, int32_t param)
 {
     /* Undocumented quirk: If both x and y are nonzero, then the value of x */
     /* takes precedence. (Yes, there are songs that rely on this behavior.) */
-    int change = (param & 0xf0) ? (param >> 4) : -(param & 0x0f);
+    int32_t change = (param & 0xf0) ? (param >> 4) : -(param & 0x0f);
     ch->volume = _pocketmod_clamp_volume(ch->volume + change);
     ch->dirty |= POCKETMOD_VOLUME;
 }
 
 static void _pocketmod_next_line(pocketmod_context *c)
 {
-    unsigned char (*data)[4];
-    int i, pos, pattern_break = -1;
+    uint8_t (*data)[4];
+    int32_t i, pos, pattern_break = -1;
 
     /* When entering a new pattern order index, mark it as "visited" */
     if (c->line == 0) {
@@ -277,13 +280,13 @@ static void _pocketmod_next_line(pocketmod_context *c)
 
     /* Find the pattern data for the current line */
     pos = (c->order[c->pattern] * 64 + c->line) * c->num_channels * 4;
-    data = (unsigned char(*)[4]) (c->patterns + pos);
+    data = (uint8_t(*)[4]) (c->patterns + pos);
     for (i = 0; i < c->num_channels; i++) {
 
         /* Decode columns */
-        int sample = (data[i][0] & 0xf0) | (data[i][2] >> 4);
-        int period = ((data[i][0] & 0x0f) << 8) | data[i][1];
-        int effect = ((data[i][2] & 0x0f) << 8) | data[i][3];
+        int32_t sample = (data[i][0] & 0xf0) | (data[i][2] >> 4);
+        int32_t period = ((data[i][0] & 0x0f) << 8) | data[i][1];
+        int32_t effect = ((data[i][2] & 0x0f) << 8) | data[i][3];
 
         /* Memorize effect parameter values */
         _pocketmod_chan *ch = &c->channels[i];
@@ -293,7 +296,7 @@ static void _pocketmod_next_line(pocketmod_context *c)
         /* Set sample */
         if (sample) {
             if (sample <= POCKETMOD_MAX_SAMPLES) {
-                unsigned char *sample_data = POCKETMOD_SAMPLE(c, sample);
+                uint8_t *sample_data = POCKETMOD_SAMPLE(c, sample);
                 ch->sample = sample;
                 ch->finetune = sample_data[2] & 0x0f;
                 ch->volume = _pocketmod_min(sample_data[3], 0x40);
@@ -307,7 +310,7 @@ static void _pocketmod_next_line(pocketmod_context *c)
 
         /* Set note */
         if (period) {
-            int note = _pocketmod_period_to_note(period);
+            int32_t note = _pocketmod_period_to_note(period);
             period += _pocketmod_finetune[ch->finetune][note];
             if (ch->effect != 0x3) {
                 if (ch->effect != 0xED) {
@@ -433,7 +436,7 @@ static void _pocketmod_next_line(pocketmod_context *c)
 
 static void _pocketmod_next_tick(pocketmod_context *c)
 {
-    int i;
+    int32_t i;
 
     /* Move to the next line if this was the last tick */
     if (++c->tick == c->ticks_per_line) {
@@ -448,7 +451,7 @@ static void _pocketmod_next_tick(pocketmod_context *c)
     /* Make per-tick adjustments for all channels */
     for (i = 0; i < c->num_channels; i++) {
         _pocketmod_chan *ch = &c->channels[i];
-        int param = ch->param;
+        int32_t param = ch->param;
 
         /* Advance the LFO random number generator */
         c->lfo_rng = 0x0019660d * c->lfo_rng + 0x3c6ef35f;
@@ -521,10 +524,10 @@ static void _pocketmod_next_tick(pocketmod_context *c)
 
                 /* 3xx: Tone portamento */
                 case 0x3: {
-                    int rate = ch->param3;
-                    int order = ch->period < ch->target;
-                    int closer = ch->period + (order ? rate : -rate);
-                    int new_order = closer < ch->target;
+                    int32_t rate = ch->param3;
+                    int32_t order = ch->period < ch->target;
+                    int32_t closer = ch->period + (order ? rate : -rate);
+                    int32_t new_order = closer < ch->target;
                     ch->period = new_order == order ? closer : ch->target;
                     ch->dirty |= POCKETMOD_PITCH;
                 } break;
@@ -564,15 +567,15 @@ static void _pocketmod_next_tick(pocketmod_context *c)
 static void _pocketmod_render_channel(pocketmod_context *c,
                                       _pocketmod_chan *chan,
                                       float *output,
-                                      int samples_to_write)
+                                      int32_t samples_to_write)
 {
     /* Gather some loop data */
     _pocketmod_sample *sample = &c->samples[chan->sample - 1];
-    unsigned char *data = POCKETMOD_SAMPLE(c, chan->sample);
-    const int loop_start = ((data[4] << 8) | data[5]) << 1;
-    const int loop_length = ((data[6] << 8) | data[7]) << 1;
-    const int loop_end = loop_length > 2 ? loop_start + loop_length : 0xffffff;
-    const float sample_end = 1 + _pocketmod_min(loop_end, sample->length);
+    uint8_t *data = POCKETMOD_SAMPLE(c, chan->sample);
+    const int32_t loop_start  = ((data[4] << 8) | data[5]) << 1;
+    const int32_t loop_length = ((data[6] << 8) | data[7]) << 1;
+    const int32_t loop_end    = loop_length > 2 ? loop_start + loop_length : 0xffffff;
+    const float   sample_end  = 1 + _pocketmod_min(loop_end, sample->length);
 
     /* Calculate left/right levels */
     const float volume = chan->real_volume / (float) (128 * 64 * 4);
@@ -580,7 +583,7 @@ static void _pocketmod_render_channel(pocketmod_context *c,
     const float level_r = volume * (0.0f + chan->balance / 255.0f);
 
     /* Write samples */
-    int i, num;
+    int32_t i, num;
     do {
 
         /* Calculate how many samples we can write in one go */
@@ -589,11 +592,11 @@ static void _pocketmod_render_channel(pocketmod_context *c,
 
         /* Resample and write 'num' samples */
         for (i = 0; i < num; i++) {
-            int x0 = chan->position;
+            int32_t x0 = chan->position;
 #ifdef POCKETMOD_NO_INTERPOLATION
             float s = sample->data[x0];
 #else
-            int x1 = x0 + 1 - loop_length * (x0 + 1 >= loop_end);
+            int32_t x1 = x0 + 1 - loop_length * (x0 + 1 >= loop_end);
             float t = chan->position - x0;
             float s = (1.0f - t) * sample->data[x0] + t * sample->data[x1];
 #endif
@@ -616,15 +619,15 @@ static void _pocketmod_render_channel(pocketmod_context *c,
     } while (num > 0);
 }
 
-static int _pocketmod_ident(pocketmod_context *c, unsigned char *data, int size)
+static int32_t _pocketmod_ident(pocketmod_context *c, uint8_t *data, int32_t size)
 {
-    int i, j;
+    int32_t i, j;
 
     /* 31-instrument files are at least 1084 bytes long */
     if (size >= 1084) {
 
         /* The format tag is located at offset 1080 */
-        unsigned char *tag = data + 1080;
+        uint8_t *tag = data + 1080;
 
         /* List of recognized format tags (possibly incomplete) */
         static const struct {
@@ -646,7 +649,7 @@ static int _pocketmod_ident(pocketmod_context *c, unsigned char *data, int size)
         };
 
         /* Check the format tag to determine if this is a 31-sample MOD */
-        for (i = 0; i < (int) (sizeof(tags) / sizeof(*tags)); i++) {
+        for (i = 0; i < (int32_t) (sizeof(tags) / sizeof(*tags)); i++) {
             if (tags[i].name[0] == tag[0] && tags[i].name[1] == tag[1]
              && tags[i].name[2] == tag[2] && tags[i].name[3] == tag[3]) {
                 c->num_channels = tags[i].channels;
@@ -692,11 +695,11 @@ static int _pocketmod_ident(pocketmod_context *c, unsigned char *data, int size)
     return 1;
 }
 
-int pocketmod_init(pocketmod_context *c, const void *data, int size, int rate)
+int32_t pocketmod_init(pocketmod_context *c, const void *data, int32_t size, int32_t rate)
 {
-    int i, remaining, header_bytes, pattern_bytes;
-    unsigned char *byte = (unsigned char*) c;
-    signed char *sample_data;
+    int32_t i, remaining, header_bytes, pattern_bytes;
+    uint8_t *byte = (uint8_t*) c;
+    int8_t *sample_data;
 
     /* Check that arguments look more or less sane */
     if (!c || !data || rate <= 0 || size <= 0) {
@@ -705,7 +708,7 @@ int pocketmod_init(pocketmod_context *c, const void *data, int size, int rate)
 
     /* Zero out the whole context and identify the MOD type */
     _pocketmod_zero(c, sizeof(pocketmod_context));
-    c->source = (unsigned char*) data;
+    c->source = (uint8_t*) data;
     if (!_pocketmod_ident(c, c->source, size)) {
         return 0;
     }
@@ -717,9 +720,9 @@ int pocketmod_init(pocketmod_context *c, const void *data, int size, int rate)
 
     /* Check that we have enough sample slots for this file */
     if (POCKETMOD_MAX_SAMPLES < 31) {
-        byte = (unsigned char*) data + 20;
+        byte = (uint8_t*) data + 20;
         for (i = 0; i < c->num_samples; i++) {
-            unsigned int length = 2 * ((byte[22] << 8) | byte[23]);
+            uint32_t length = 2 * ((byte[22] << 8) | byte[23]);
             if (i >= POCKETMOD_MAX_SAMPLES && length > 2) {
                 return 0; /* Can't fit this sample */
             }
@@ -743,7 +746,7 @@ int pocketmod_init(pocketmod_context *c, const void *data, int size, int rate)
         c->num_patterns = _pocketmod_max(c->num_patterns, c->order[i]);
     }
     pattern_bytes = 256 * c->num_channels * ++c->num_patterns;
-    header_bytes = (int) ((char*) c->patterns - (char*) data);
+    header_bytes = (int32_t) ((char*) c->patterns - (char*) data);
 
     /* Check that each pattern in the order is within file bounds */
     for (i = 0; i < c->length; i++) {
@@ -759,10 +762,10 @@ int pocketmod_init(pocketmod_context *c, const void *data, int size, int rate)
 
     /* Load sample payload data, truncating ones that extend outside the file */
     remaining = size - header_bytes - pattern_bytes;
-    sample_data = (signed char*) data + header_bytes + pattern_bytes;
+    sample_data = (int8_t*) data + header_bytes + pattern_bytes;
     for (i = 0; i < c->num_samples; i++) {
-        unsigned char *data = POCKETMOD_SAMPLE(c, i + 1);
-        unsigned int length = ((data[0] << 8) | data[1]) << 1;
+        uint8_t *data = POCKETMOD_SAMPLE(c, i + 1);
+        uint32_t length = ((data[0] << 8) | data[1]) << 1;
         _pocketmod_sample *sample = &c->samples[i];
         sample->data = sample_data;
         sample->length = _pocketmod_min(length > 2 ? length : 0, remaining);
@@ -786,16 +789,16 @@ int pocketmod_init(pocketmod_context *c, const void *data, int size, int rate)
     return 1;
 }
 
-int pocketmod_render(pocketmod_context *c, void *buffer, int buffer_size)
+int32_t pocketmod_render(pocketmod_context *c, void *buffer, int32_t buffer_size)
 {
-    int i, samples_rendered = 0;
-    int samples_remaining = buffer_size / POCKETMOD_SAMPLE_SIZE;
+    int32_t i, samples_rendered = 0;
+    int32_t samples_remaining = buffer_size / POCKETMOD_SAMPLE_SIZE;
     if (c && buffer) {
-        float (*output)[2] = (float(*)[2]) buffer;
+        float (*output)[2] = (int16_t(*)[2]) buffer;
         while (samples_remaining > 0) {
 
             /* Calculate the number of samples left in this tick */
-            int num = (int) (c->samples_per_tick - c->sample);
+            int32_t num = (int32_t) (c->samples_per_tick - c->sample);
             num = _pocketmod_min(num + !num, samples_remaining);
 
             /* Render and mix 'num' samples from each channel */
@@ -831,7 +834,7 @@ int pocketmod_render(pocketmod_context *c, void *buffer, int buffer_size)
     return samples_rendered * POCKETMOD_SAMPLE_SIZE;
 }
 
-int pocketmod_loop_count(pocketmod_context *c)
+int32_t pocketmod_loop_count(pocketmod_context *c)
 {
     return c->loop_count;
 }
