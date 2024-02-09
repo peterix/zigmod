@@ -107,11 +107,7 @@ int main(int argc, char **argv)
     fputl(0, file);               /* Subchunk2Size */
 
     /* Write sample data */
-#ifdef POCKETMOD_INT_PCM
-    short buffer[512][2];
-#else
     float buffer[512][2];
-#endif
     short output[512][2];
     while (pocketmod_loop_count(&context) == 0) {
 
@@ -122,13 +118,8 @@ int main(int argc, char **argv)
 
         /* Convert the sample data to 16-bit and write it to the file */
         for (i = 0; i < rendered_samples; i++) {
-#ifdef POCKETMOD_INT_PCM
-            output[i][0] = buffer[i][0];
-            output[i][1] = buffer[i][1];
-#else
             output[i][0] = (short) (clip(buffer[i][0]) * 0x7fff);
             output[i][1] = (short) (clip(buffer[i][1]) * 0x7fff);
-#endif
         }
         fwrite(output, rendered_samples * sizeof(short[2]), 1, file);
 

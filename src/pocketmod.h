@@ -18,11 +18,7 @@ int32_t pocketmod_loop_count(pocketmod_context *c);
 #endif
 
 /* The size of one sample in bytes */
-#ifdef POCKETMOD_INT_PCM
-#define POCKETMOD_SAMPLE_SIZE sizeof(int16_t[2])
-#else
 #define POCKETMOD_SAMPLE_SIZE sizeof(float[2])
-#endif
 
 typedef struct {
     int8_t  *data;               /* Sample data buffer                      */
