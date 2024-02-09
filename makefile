@@ -15,11 +15,11 @@ help:
 	@ echo "  'make player' to build the SDL2 player example"
 	@ echo "  'make clean' to remove build artifacts"
 
-converter: examples/converter.c pocketmod.h
-	$(CC) $(filter %.c, $^) -o $@ -I. -O2
+converter: examples/converter.c src/pocketmod.h
+	$(CC) $(filter %.c, $^) -o $@ -Isrc -O2
 
-player: examples/player.c pocketmod.h
-	$(CC) $(filter %.c, $^) -o $@ -I. $(LDFLAGS) -lSDL2main -lSDL2
+player: examples/player.c src/pocketmod.h
+	$(CC) $(filter %.c, $^) -o $@ -Isrc $(LDFLAGS) -lSDL2main -lSDL2
 
 .PHONY: clean
 clean:

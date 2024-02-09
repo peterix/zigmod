@@ -4,5 +4,8 @@ player
 player.exe
 *.wav
 
+zig-cache
+zig-out
+
 # macOS junk files
 .DS_Store
